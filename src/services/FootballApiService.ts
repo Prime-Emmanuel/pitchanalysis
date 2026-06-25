@@ -2,8 +2,8 @@ import { Fixture } from "../types";
 
 export interface ApiStatusResponse {
   get: string;
-  parameters: any[];
-  errors: any[];
+  parameters: any;
+  errors: any;
   results: number;
   paging: { current: number; total: number };
   response: {
@@ -24,66 +24,84 @@ export interface ApiStatusResponse {
   };
 }
 
+const BASE_URL = "https://v3.football.api-sports.io";
+
 export class FootballApiService {
   private static get apiKey(): string {
     const key = import.meta.env.VITE_API_FOOTBALL_KEY;
     if (!key) {
-      throw new Error("Missing API-Football Key. Please set VITE_API_FOOTBALL_KEY in your environment to view real fixtures.");
+      throw new Error("Missing VITE_API_FOOTBALL_KEY in environment variables");
     }
     return key;
   }
 
-  private static readonly baseUrl = "https://v3.football.api-sports.io";
+  // CORE FETCH
+  private static async request(endpoint: string) {
+    const res = await fetch(`${BASE_URL}${endpoint}`, {
+      method: "GET",
+      headers: {
+        "x-rapidapi-host": "v3.football.api-sports.io",
+        "x-apisports-key": this.apiKey,
+      },
+    });
 
-  private static async fetchFromApi<T>(endpoint: string): Promise<T> {
-    try {
-      const response = await fetch(`${this.baseUrl}${endpoint}`, {
-        method: "GET",
-        headers: {
-          "x-rapidapi-host": "v3.football.api-sports.io",
-          "x-rapidapi-key": this.apiKey,
-        },
-      });
-
-      if (response.status === 429) {
-        throw new Error("Rate limit exceeded. Please try again later.");
-      }
-
-      if (!response.ok) {
-        throw new Error(`Network error: API request failed with status ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      // Log the raw JSON response to the console as requested
-      console.log(`Raw API Response for ${endpoint}:`, data);
-
-      if (data.errors && Object.keys(data.errors).length > 0) {
-        const errorMsg = Array.isArray(data.errors) ? data.errors[0] : Object.values(data.errors)[0];
-        throw new Error(`API Error: ${errorMsg}`);
-      }
-
-      return data.response as T;
-    } catch (error) {
-      console.error(`Error fetching ${endpoint}:`, error);
-      throw error;
+    if (res.status === 429) {
+      throw new Error("Rate limit exceeded (API-Football)");
     }
+
+    if (!res.ok) {
+      throw new Error(`API error: ${res.status}`);
+    }
+
+    const data = await res.json();
+
+    console.log("API RESPONSE:", endpoint, data);
+
+    if (data.errors && Object.keys(data.errors).length > 0) {
+      throw new Error("API returned an error");
+    }
+
+    return data.response;
   }
 
-  public static async testConnection(): Promise<ApiStatusResponse["response"]> {
-    return this.fetchFromApi<ApiStatusResponse["response"]>("/status");
+  // STATUS CHECK
+  static async testConnection(): Promise<ApiStatusResponse["response"]> {
+    return this.request("/status");
   }
 
-  public static async getTodaysMatches(): Promise<Fixture[]> {
+  // TODAY MATCHES
+  static async getTodaysMatches(): Promise<Fixture[]> {
     const today = new Date().toISOString().split("T")[0];
-    return this.fetchFromApi<Fixture[]>(`/fixtures?date=${today}`);
+
+    const data = await this.request(`/fixtures?date=${today}`);
+
+    return data.map((item: any) => ({
+      id: item.fixture.id,
+      date: item.fixture.date,
+      status: item.fixture.status?.long,
+      homeTeam: item.teams.home.name,
+      awayTeam: item.teams.away.name,
+      score: item.goals,
+    }));
   }
 
-  public static async getMatchDetails(fixtureId: string): Promise<Fixture> {
-    const fixtures = await this.fetchFromApi<Fixture[]>(`/fixtures?id=${fixtureId}`);
-    if (!fixtures || fixtures.length === 0) {
+  // MATCH DETAILS
+  static async getMatchDetails(id: string): Promise<Fixture> {
+    const data = await this.request(`/fixtures?id=${id}`);
+
+    if (!data || data.length === 0) {
       throw new Error("Match not found");
     }
-    return fixtures[0];
+
+    const item = data[0];
+
+    return {
+      id: item.fixture.id,
+      date: item.fixture.date,
+      status: item.fixture.status?.long,
+      homeTeam: item.teams.home.name,
+      awayTeam: item.teams.away.name,
+      score: item.goals,
+    };
   }
 }
