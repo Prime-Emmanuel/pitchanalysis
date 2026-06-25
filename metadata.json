@@ -1,0 +1,6 @@
+{
+  "name": "Football Analytics Platform",
+  "description": "A professional platform for viewing real football fixtures and match details.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
