@@ -7,6 +7,9 @@ import {
   Target,
   Zap,
   ChevronDown,
+  Sparkles,
+  Trophy,
+  TrendingUp,
 } from "lucide-react";
 
 const fadeInUp = {
@@ -28,31 +31,47 @@ export function Home() {
     <div className="min-h-screen bg-[#050505] text-white font-sans overflow-x-hidden">
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center px-4 sm:px-6 lg:px-8 py-20">
+        {/* Subtle Background Glow */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-[#D4AF37]/5 blur-3xl" />
+        </div>
+
         {/* Golden Particles */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {[...Array(12)].map((_, i) => (
+          {[...Array(8)].map((_, i) => (
             <div
               key={i}
-              className="absolute rounded-full bg-[#D4AF37] opacity-20"
+              className="absolute rounded-full bg-[#D4AF37] opacity-10"
               style={{
-                width: Math.random() * 6 + 2 + "px",
-                height: Math.random() * 6 + 2 + "px",
+                width: Math.random() * 4 + 2 + "px",
+                height: Math.random() * 4 + 2 + "px",
                 top: Math.random() * 100 + "%",
                 left: Math.random() * 100 + "%",
-                animation: `float ${6 + Math.random() * 8}s infinite alternate`,
-                animationDelay: Math.random() * 5 + "s",
+                animation: `float ${8 + Math.random() * 10}s infinite alternate`,
+                animationDelay: Math.random() * 6 + "s",
               }}
             />
           ))}
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="relative z-10 max-w-7xl mx-auto w-full">
           <motion.div
             initial="initial"
             animate="animate"
             variants={staggerContainer}
-            className="space-y-8"
+            className="max-w-3xl mx-auto text-center"
           >
+            {/* Badge */}
+            <motion.div
+              variants={fadeInUp}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#D4AF37]/20 bg-[#D4AF37]/5 mb-8"
+            >
+              <Sparkles className="h-4 w-4 text-[#D4AF37]" />
+              <span className="text-xs font-medium text-[#D4AF37] tracking-wider uppercase">
+                AI-Powered Football Intelligence
+              </span>
+            </motion.div>
+
             <motion.h1
               variants={fadeInUp}
               className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight"
@@ -64,7 +83,7 @@ export function Home() {
 
             <motion.p
               variants={fadeInUp}
-              className="text-lg sm:text-xl text-[#A1A1AA] max-w-lg leading-relaxed"
+              className="mt-6 text-lg sm:text-xl text-[#A1A1AA] max-w-2xl mx-auto leading-relaxed"
             >
               Advanced probability analysis that evaluates every match before
               kickoff using historical data, statistical models and intelligent
@@ -73,14 +92,14 @@ export function Home() {
 
             <motion.div
               variants={fadeInUp}
-              className="flex flex-col sm:flex-row gap-4"
+              className="mt-10 flex flex-col sm:flex-row gap-4 justify-center"
             >
               <Link
                 to="/today"
-                className="inline-flex items-center justify-center px-8 py-4 bg-[#D4AF37] text-[#050505] font-medium rounded-lg hover:bg-[#E5C56A] transition-colors duration-300 shadow-lg shadow-[#D4AF37]/20 text-base"
+                className="inline-flex items-center justify-center px-8 py-4 bg-[#D4AF37] text-[#050505] font-medium rounded-lg hover:bg-[#E5C56A] transition-colors duration-300 shadow-lg shadow-[#D4AF37]/20 text-base group"
               >
                 Analyze Today's Matches
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
                 to="/how-it-works"
@@ -89,31 +108,25 @@ export function Home() {
                 How It Works
               </Link>
             </motion.div>
-          </motion.div>
 
-          {/* 3D Football */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.3 }}
-            className="relative flex justify-center items-center"
-          >
-            <div className="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96">
-              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#D4AF37]/30 via-[#D4AF37]/10 to-transparent blur-3xl animate-pulse" />
-              <div className="relative w-full h-full rounded-full bg-gradient-to-br from-[#D4AF37] via-[#F5E56B] to-[#B8962E] shadow-2xl shadow-[#D4AF37]/30 animate-float">
-                <div className="absolute inset-0 rounded-full border-2 border-[#D4AF37]/40" />
-                <div className="absolute inset-[10%] rounded-full border border-[#D4AF37]/30" />
-                <div className="absolute inset-[20%] rounded-full border border-[#D4AF37]/20" />
-                <div className="absolute inset-[30%] rounded-full border border-[#D4AF37]/10" />
-                {/* Pentagon patterns */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/2 h-1/2 rotate-45">
-                  <div className="w-full h-full border-2 border-[#D4AF37]/40 rounded-lg" />
+            {/* Stats */}
+            <motion.div
+              variants={fadeInUp}
+              className="mt-16 grid grid-cols-3 gap-8 max-w-md mx-auto"
+            >
+              {[
+                { label: "Matches Analyzed", value: "10K+" },
+                { label: "Leagues Covered", value: "50+" },
+                { label: "Accuracy Rate", value: "92%" },
+              ].map((stat) => (
+                <div key={stat.label} className="text-center">
+                  <p className="text-2xl font-display font-bold text-white">
+                    {stat.value}
+                  </p>
+                  <p className="text-xs text-[#A1A1AA] mt-1">{stat.label}</p>
                 </div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/3 h-1/3 -rotate-12">
-                  <div className="w-full h-full border-2 border-[#D4AF37]/30 rounded-full" />
-                </div>
-              </div>
-            </div>
+              ))}
+            </motion.div>
           </motion.div>
         </div>
 
@@ -137,12 +150,28 @@ export function Home() {
             variants={staggerContainer}
             className="text-center mb-16"
           >
+            <motion.div
+              variants={fadeInUp}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#D4AF37]/20 bg-[#D4AF37]/5 mb-4"
+            >
+              <Trophy className="h-4 w-4 text-[#D4AF37]" />
+              <span className="text-xs font-medium text-[#D4AF37] tracking-wider uppercase">
+                Why Choose Us
+              </span>
+            </motion.div>
             <motion.h2
               variants={fadeInUp}
               className="font-display text-3xl sm:text-4xl font-bold"
             >
-              Why Choose Us
+              Built for the <span className="text-[#D4AF37]">Modern Analyst</span>
             </motion.h2>
+            <motion.p
+              variants={fadeInUp}
+              className="mt-4 text-[#A1A1AA] max-w-2xl mx-auto"
+            >
+              Every tool you need to make data-driven decisions, powered by
+              cutting-edge AI.
+            </motion.p>
           </motion.div>
 
           <motion.div
@@ -205,11 +234,20 @@ export function Home() {
             variants={staggerContainer}
             className="text-center mb-16"
           >
+            <motion.div
+              variants={fadeInUp}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#D4AF37]/20 bg-[#D4AF37]/5 mb-4"
+            >
+              <TrendingUp className="h-4 w-4 text-[#D4AF37]" />
+              <span className="text-xs font-medium text-[#D4AF37] tracking-wider uppercase">
+                How It Works
+              </span>
+            </motion.div>
             <motion.h2
               variants={fadeInUp}
               className="font-display text-3xl sm:text-4xl font-bold"
             >
-              How It Works
+              From Data to <span className="text-[#D4AF37]">Insight</span>
             </motion.h2>
           </motion.div>
 
@@ -278,6 +316,46 @@ export function Home() {
         </div>
       </section>
 
+      {/* CTA Section */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-[#050505]">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+            className="text-center p-12 rounded-3xl bg-[#111111] border border-[#222222] relative overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-[#D4AF37]/5 blur-3xl" />
+            <div className="relative z-10">
+              <motion.h2
+                variants={fadeInUp}
+                className="font-display text-3xl sm:text-4xl font-bold"
+              >
+                Ready to <span className="text-[#D4AF37]">Elevate</span> Your
+                Analysis?
+              </motion.h2>
+              <motion.p
+                variants={fadeInUp}
+                className="mt-4 text-[#A1A1AA] max-w-xl mx-auto"
+              >
+                Join thousands of analysts who trust PitchAnalysis for
+                data-driven football intelligence.
+              </motion.p>
+              <motion.div variants={fadeInUp} className="mt-8">
+                <Link
+                  to="/today"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-[#D4AF37] text-[#050505] font-medium rounded-lg hover:bg-[#E5C56A] transition-colors duration-300 shadow-lg shadow-[#D4AF37]/20 text-base group"
+                >
+                  Get Started Now
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Footer (minimal) */}
       <footer className="py-12 px-4 sm:px-6 lg:px-8 border-t border-[#222222] bg-[#050505]">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-6">
@@ -285,13 +363,22 @@ export function Home() {
             PitchAnalysis
           </div>
           <div className="flex flex-wrap justify-center gap-6 text-sm text-[#A1A1AA]">
-            <Link to="/privacy" className="hover:text-[#D4AF37] transition-colors">
+            <Link
+              to="/privacy"
+              className="hover:text-[#D4AF37] transition-colors"
+            >
               Privacy
             </Link>
-            <Link to="/terms" className="hover:text-[#D4AF37] transition-colors">
+            <Link
+              to="/terms"
+              className="hover:text-[#D4AF37] transition-colors"
+            >
               Terms
             </Link>
-            <Link to="/contact" className="hover:text-[#D4AF37] transition-colors">
+            <Link
+              to="/contact"
+              className="hover:text-[#D4AF37] transition-colors"
+            >
               Contact
             </Link>
             <a
