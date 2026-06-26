@@ -1,5 +1,7 @@
 import { Fixture } from "../types";
 
+const BASE_URL = "https://v3.football.api-sports.io";
+
 export interface ApiStatusResponse {
   get: string;
   parameters: any;
@@ -24,30 +26,24 @@ export interface ApiStatusResponse {
   };
 }
 
-const BASE_URL = "https://v3.football.api-sports.io";
-
 export class FootballApiService {
   private static get apiKey(): string {
     const key = import.meta.env.VITE_API_FOOTBALL_KEY;
     if (!key) {
-      throw new Error("Missing VITE_API_FOOTBALL_KEY in environment variables");
+      throw new Error("Missing VITE_API_FOOTBALL_KEY");
     }
     return key;
   }
 
-  // CORE FETCH
+  // -------------------------
+  // CORE REQUEST
+  // -------------------------
   private static async request(endpoint: string) {
     const res = await fetch(`${BASE_URL}${endpoint}`, {
-      method: "GET",
       headers: {
-        "x-rapidapi-host": "v3.football.api-sports.io",
         "x-apisports-key": this.apiKey,
       },
     });
-
-    if (res.status === 429) {
-      throw new Error("Rate limit exceeded (API-Football)");
-    }
 
     if (!res.ok) {
       throw new Error(`API error: ${res.status}`);
@@ -58,50 +54,101 @@ export class FootballApiService {
     console.log("API RESPONSE:", endpoint, data);
 
     if (data.errors && Object.keys(data.errors).length > 0) {
-      throw new Error("API returned an error");
+      throw new Error("API returned error");
     }
 
+    return data;
+  }
+
+  // -------------------------
+  // STATUS
+  // -------------------------
+  static async testConnection(): Promise<ApiStatusResponse["response"]> {
+    const data = await this.request("/status");
     return data.response;
   }
 
-  // STATUS CHECK
-  static async testConnection(): Promise<ApiStatusResponse["response"]> {
-    return this.request("/status");
-  }
-
+  // -------------------------
   // TODAY MATCHES
+  // -------------------------
   static async getTodaysMatches(): Promise<Fixture[]> {
     const today = new Date().toISOString().split("T")[0];
 
     const data = await this.request(`/fixtures?date=${today}`);
 
-    return data.map((item: any) => ({
-      id: item.fixture.id,
-      date: item.fixture.date,
-      status: item.fixture.status?.long,
-      homeTeam: item.teams.home.name,
-      awayTeam: item.teams.away.name,
-      score: item.goals,
+    return (data.response || []).map((item: any) => ({
+      id: item.fixture?.id,
+      date: item.fixture?.date,
+
+      status: {
+        short: item.fixture?.status?.short,
+        long: item.fixture?.status?.long,
+      },
+
+      league: {
+        name: item.league?.name,
+        logo: item.league?.logo,
+      },
+
+      teams: {
+        home: {
+          name: item.teams?.home?.name,
+          logo: item.teams?.home?.logo,
+        },
+        away: {
+          name: item.teams?.away?.name,
+          logo: item.teams?.away?.logo,
+        },
+      },
+
+      goals: {
+        home: item.goals?.home,
+        away: item.goals?.away,
+      },
     }));
   }
 
+  // -------------------------
   // MATCH DETAILS
+  // -------------------------
   static async getMatchDetails(id: string): Promise<Fixture> {
     const data = await this.request(`/fixtures?id=${id}`);
 
-    if (!data || data.length === 0) {
+    const item = data.response?.[0];
+
+    if (!item) {
       throw new Error("Match not found");
     }
 
-    const item = data[0];
-
     return {
-      id: item.fixture.id,
-      date: item.fixture.date,
-      status: item.fixture.status?.long,
-      homeTeam: item.teams.home.name,
-      awayTeam: item.teams.away.name,
-      score: item.goals,
+      id: item.fixture?.id,
+      date: item.fixture?.date,
+
+      status: {
+        short: item.fixture?.status?.short,
+        long: item.fixture?.status?.long,
+      },
+
+      league: {
+        name: item.league?.name,
+        logo: item.league?.logo,
+      },
+
+      teams: {
+        home: {
+          name: item.teams?.home?.name,
+          logo: item.teams?.home?.logo,
+        },
+        away: {
+          name: item.teams?.away?.name,
+          logo: item.teams?.away?.logo,
+        },
+      },
+
+      goals: {
+        home: item.goals?.home,
+        away: item.goals?.away,
+      },
     };
   }
 }
